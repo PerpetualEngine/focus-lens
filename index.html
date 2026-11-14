@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus Lens: find your focus style in 4 minutes</title>
+<meta name="description" content="A 30-question quiz about how your attention works. Free result, optional full report. Not a medical test.">
+<style>
+:root{--ink:#1d2b2a;--muted:#5d6c6b;--bg:#f7f4ee;--card:#fff;--line:#e4ded1;--accent:#1f7a6d;--accent-d:#175e54;--soft:#e6f2ef;--warn:#fff6e0;--link:#3366cc}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a,a:visited{color:var(--link)}
+header{display:flex;align-items:center;justify-content:space-between;max-width:720px;margin:0 auto;padding:18px 16px}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:20px}
+.logo span{color:var(--accent)}
+main{max-width:720px;margin:0 auto;padding:0 16px 56px}
+h1{font-size:clamp(32px,7vw,46px);line-height:1.08;letter-spacing:-.03em;margin:8px 0 14px}
+h2{font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px}
+h3{font-size:18px;margin:22px 0 6px}
+p{margin:0 0 14px}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;font-size:18px;line-height:1.2;padding:18px 20px;cursor:pointer;text-align:center;text-decoration:none}
+.btn:hover{background:var(--accent-d)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 26px;padding:0;list-style:none}
+.chips li{background:var(--soft);color:var(--accent-d);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600}
+.prog{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 20px}
+.prog>i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.q{padding:18px 0;border-bottom:1px solid var(--line)}
+.q:last-of-type{border-bottom:0}
+.q p{font-weight:600;margin-bottom:12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.scale label{position:relative}
+.scale input{position:absolute;opacity:0}
+.scale span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;border:1.5px solid var(--line);border-radius:12px;font-size:12px;text-align:center;color:var(--muted);cursor:pointer;background:#fff;padding:4px}
+.scale span b{font-size:18px;color:var(--ink)}
+.scale input:checked+span{background:var(--accent);border-color:var(--accent);color:#fff}
+.scale input:checked+span b{color:#fff}
+.scale input:focus-visible+span{outline:3px solid #9cc7f5}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.bar{margin:12px 0}
+.bar .lab{display:flex;justify-content:space-between;font-weight:600;font-size:15px}
+.bar .track{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:5px}
+.bar .track i{display:block;height:100%;background:#9fc9c1;border-radius:99px}
+.bar.top .track i{background:var(--accent)}
+.badge{display:inline-block;background:var(--soft);color:var(--accent-d);font-weight:700;font-size:13px;border-radius:99px;padding:5px 12px;margin-bottom:10px}
+.notice{background:var(--warn);border:1px solid #f0dfaa;border-radius:12px;padding:12px 14px;font-size:14px;margin:16px 0}
+ul.tick{padding:0;list-style:none;margin:0 0 6px}
+ul.tick li{padding-left:28px;position:relative;margin:8px 0}
+ul.tick li:before{content:"";position:absolute;left:2px;top:6px;width:14px;height:8px;border-left:3px solid var(--accent);border-bottom:3px solid var(--accent);transform:rotate(-45deg)}
+.locked{position:relative;border:1px dashed #b9c9c6;border-radius:14px;padding:14px 16px;margin:10px 0;background:#fbfdfc}
+.locked b{display:block}
+.locked small{color:var(--muted)}
+.price{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.terms{border:2px solid var(--ink);border-radius:14px;padding:14px 16px;margin:16px 0;background:#fff;font-size:16px}
+.terms strong{display:block;margin-bottom:4px}
+footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--muted)}
+.hide{display:none}
+@media(max-width:420px){.scale span{font-size:11px;min-height:48px}.card{padding:18px 16px}}
+</style>
+</head>
+<body>
+<header><div class="logo">Focus<span>Lens</span></div><a href="#/terms" style="font-size:14px">Terms and cancelling</a></header>
+<main id="app"></main>
+<footer>Focus Lens is a self-reflection tool for personal insight. It is not a medical test, does not diagnose ADHD or any other condition, and is not a substitute for professional care. If attention or mood problems affect your daily life, please talk to a qualified clinician.</footer>
+
+<script>
+/* ===== CONFIG: edit these, nothing else needs touching ===== */
+const CFG = {
+  brand: "Focus Lens",
+  priceToday: "$1",
+  priceThen: "$19",
+  interval: "every 4 weeks",
+  trialDays: 7,
+  checkoutUrl: "https://buy.stripe.com/14A28teeIafS5Cv0mP1gs08",
+  supportEmail: "eric@perpetualnurture.com",
+  cancelUrl: "#/terms"
+};
+
+/* ===== DATA ===== */
+const TRAITS = {
+  spark:{name:"The Spark",tag:"Fast to ignite, always seeing the next idea.",
+    sum:"Your attention follows interest. New ideas, people and problems light you up quickly, and you learn fast when something fascinates you. The cost shows up in the middle: once novelty fades, routine work feels heavier than it should.",
+    str:["You start things other people only talk about.","You connect ideas across fields.","You learn fast when you care."],
+    fric:["Projects stall at 80 percent.","Routine feels disproportionately heavy.","Too many open loops at once."],
+    tips:["Cap open projects at three. Write the others in a parking-lot list so the idea is safe but not active.","Attach one novelty to every boring task: new playlist, new location, a timer game.","Define done before you start, in one sentence, and put it where you can see it.","Schedule a weekly 20-minute finish session for the almost-done pile.","Pick one project to carry for 90 days and treat the rest as experiments."]},
+  sprint:{name:"The Sprinter",tag:"All in or all out, with a gift for deep bursts.",
+    sum:"Your focus is not steady, it is intense. When something matters you can work for hours and produce a lot. Interruptions cost you more than they cost others, and the in-between time can feel flat.",
+    str:["Deep, high-quality output in bursts.","Strong follow-through on what you care about.","Fast under real deadlines."],
+    fric:["Meals, sleep and messages get lost in the zone.","Starting without a spark is hard.","Interruptions break more than a minute."],
+    tips:["Block 90-minute sprints and protect them with notifications off and a visible sign.","Set a gentle alarm every 90 minutes for water and food, since you will not notice.","Write the next action before you stop, so restarting is easy.","Use a 5-minute start ritual for low-interest tasks: same song, same first step.","Batch replies into one slot after the sprint."]},
+  drift:{name:"The Wanderer",tag:"Curious mind, quiet drift, details slip.",
+    sum:"Your mind roams, often to interesting places. In meetings, long instructions and routine admin, the thread slips, and small things like keys or replies get lost. This is a fit problem between your attention and the setup around you, and setups can change.",
+    str:["Big-picture and creative thinking.","Notices what others miss when drifting.","Gentle, patient with others."],
+    fric:["Lost items and missed replies.","Long instructions lose you.","Tasks left at 90 percent."],
+    tips:["Create one landing spot for keys, phone, wallet. Always, no exceptions.","Turn every instruction into a three-line checklist the moment you hear it.","Reply within two minutes or put it in a visible Today list, never in your head.","Use external reminders for anything with a time attached.","Finish the last 10 percent first thing the next morning, before new work."]},
+  motor:{name:"The Engine",tag:"Energy that needs somewhere to go.",
+    sum:"You run on movement. Sitting still, waiting and winding down are harder for you than for most, and your thoughts and speech tend to run fast. Given outlets, that energy is a real asset.",
+    str:["Energy that lifts a room.","Quick thinking and quick action.","Thinks better on the move."],
+    fric:["Long sitting and waiting.","Hard to switch off at night.","Impatience with slow processes."],
+    tips:["Work in 25-minute blocks with a 3-minute movement break built in.","Take calls walking and think out loud on your feet.","Use a standing desk, a fidget tool or a balance seat for long tasks.","End the day with a 10-minute physical wind-down, then screens off.","Carry something to do for any known waiting time."]},
+  tide:{name:"The Tidewater",tag:"Feels deeply, and reads the room before it speaks.",
+    sum:"You feel things strongly and quickly, in your mind and in your body. Criticism lands hard, moods can turn on small events, and fairness matters to you. The same sensitivity makes you perceptive and loyal.",
+    str:["Reads people and situations well.","Deep loyalty and care.","Strong sense of fairness."],
+    fric:["Criticism lingers.","Mood swings with small events.","Hard to settle after being upset."],
+    tips:["Name the feeling in one sentence before you act on it. Delay replies by 20 minutes when upset.","Ask for criticism in writing so you can read it twice before reacting.","Build a 5-minute reset: cold water, slow exhale, short walk.","Track mood and sleep for two weeks to spot your triggers.","Tell one trusted person how you work so they can help instead of guessing."]}
+};
+const ORDER = ["spark","sprint","drift","motor","tide"];
+const QS = {
+ spark:["I get excited about new ideas and projects much faster than I finish old ones.","Once the novelty fades, I lose interest even in things I chose myself.","I like having several projects going at once.","I learn fastest when something genuinely fascinates me.","Routine tasks feel heavier to me than they seem to feel to others.","I often start a new hobby and go all in for a few weeks."],
+ sprint:["When I care about something, I can work for hours without noticing.","I get more done in one intense burst than in several calm sessions.","Being interrupted while I am in the zone feels disruptive.","I lose track of meals or time when I am absorbed.","My focus tends to be all or nothing.","I do my best work close to a deadline."],
+ drift:["My mind wanders in meetings or conversations.","I lose keys, my phone or other small daily items.","I need lists or reminders or things slip through.","I leave tasks about 90 percent finished.","Long instructions are easy for me to lose the thread on.","I forget to reply to messages I meant to answer."],
+ motor:["I feel restless when I have to sit still for long.","I think better when I am moving or fidgeting.","I find it hard to wind down at the end of the day.","I am often the most energetic person in the room.","Waiting in lines or for slow replies is hard for me.","My thoughts or speech tend to run fast."],
+ tide:["My mood can shift quickly based on small events.","I feel criticism or rejection more strongly than most people seem to.","Once I am upset, it takes me a while to calm down.","I feel emotions intensely in my body.","I have a strong sense of fairness and react when things seem unjust.","I find it hard to hide how I feel."]
+};
+const LIST = []; for(let i=0;i<6;i++) ORDER.forEach(t=>LIST.push({t, q:QS[t][i]}));
+const PER_PAGE = 5, PAGES = LIST.length/PER_PAGE;
+const LABELS = ["Not at all","A little","Sometimes","Mostly","Very much"];
+
+/* ===== STATE + TRACKING ===== */
+let ans = {}, page = 0;
+try{ ans = JSON.parse(localStorage.getItem("fl_ans")||"{}"); }catch(e){}
+function save(){ try{localStorage.setItem("fl_ans",JSON.stringify(ans));}catch(e){} }
+function track(name,data){ window.dataLayer=window.dataLayer||[]; window.dataLayer.push(Object.assign({event:name},data||{})); if(window.fbq){try{fbq("trackCustom",name,data||{});}catch(e){}} }
+function scores(){ const s={}; ORDER.forEach(t=>s[t]=0); LIST.forEach((it,i)=>{ if(ans[i]) s[it.t]+=ans[i]; }); const p={}; ORDER.forEach(t=>p[t]=Math.round((s[t]-6)/24*100)); return p; }
+function ranked(){ const p=scores(); return ORDER.slice().sort((a,b)=>p[b]-p[a]); }
+const $ = h => { const d=document.createElement("div"); d.innerHTML=h; return d; };
+const app = document.getElementById("app");
+function show(html){ app.innerHTML=html; window.scrollTo(0,0); }
+const money = () => `${CFG.priceToday} today, then ${CFG.priceThen} ${CFG.interval} starting day ${CFG.trialDays+1}`;
+
+/* ===== VIEWS ===== */
+function home(){
+  show(`<h1>Find your focus style in 4 minutes.</h1>
+  <p class="muted" style="font-size:19px">30 quick statements about how your attention actually behaves. You get your result free, with no sign-up.</p>
+  <ul class="chips"><li>30 questions</li><li>About 4 minutes</li><li>Free result</li><li>No email needed</li></ul>
+  <div class="card">
+    <ul class="tick"><li>See which of 5 focus styles is strongest in you</li><li>Understand where your style helps and where it costs you</li><li>Get two practical tips right away, free</li></ul>
+    <button class="btn" id="go">Start the quiz</button>
+    <p class="muted" style="font-size:14px;margin:12px 0 0">A full report is available after the quiz if you want it. It is optional, and the price and renewal terms are shown before you pay.</p>
+  </div>
+  <div class="notice"><b>Not a medical test.</b> This quiz describes how you work. It cannot tell you whether you have ADHD or any other condition.</div>`);
+  document.getElementById("go").onclick=()=>{track("quiz_start");page=0;nav("#/quiz");};
+}
+function quiz(){
+  const start=page*PER_PAGE, items=LIST.slice(start,start+PER_PAGE);
+  const done=Object.keys(ans).length;
+  show(`<div class="muted" style="font-size:14px">Part ${page+1} of ${PAGES}</div>
+  <div class="prog"><i style="width:${Math.round(done/LIST.length*100)}%"></i></div>
+  <div class="card"><h2 style="font-size:22px">How true is each statement for you?</h2>
+  ${items.map((it,k)=>{const i=start+k;return `<div class="q"><p>${it.q}</p><div class="scale" role="radiogroup" aria-label="${it.q}">${[1,2,3,4,5].map(v=>`<label><input type="radio" name="q${i}" value="${v}" ${ans[i]===v?"checked":""}><span><b>${v}</b>${LABELS[v-1]}</span></label>`).join("")}</div></div>`}).join("")}
+  <div class="row" style="margin-top:14px">${page>0?'<button class="btn ghost" id="back">Back</button>':""}<button class="btn" id="next" disabled>${page===PAGES-1?"See my result":"Next"}</button></div></div>`);
+  const next=document.getElementById("next");
+  const ok=()=>{ next.disabled=!items.every((_,k)=>ans[start+k]); };
+  app.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{ans[+inp.name.slice(1)]=+inp.value;save();ok();
+    const nm=inp.name; const idx=+nm.slice(1); const nxt=app.querySelector(`input[name=q${idx+1}]`); const prog=app.querySelector(".prog i"); prog.style.width=Math.round(Object.keys(ans).length/LIST.length*100)+"%"; if(nxt&&!ans[idx+1]) nxt.closest(".q").scrollIntoView({behavior:"smooth",block:"center"}); });
+  ok();
+  next.onclick=()=>{ if(page<PAGES-1){page++;track("quiz_page",{page});quiz();} else {track("quiz_complete");nav("#/result");} };
+  const b=document.getElementById("back"); if(b) b.onclick=()=>{page--;quiz();};
+}
+function result(){
+  if(Object.keys(ans).length<LIST.length){nav("#/quiz");return;}
+  const p=scores(), r=ranked(), top=TRAITS[r[0]], second=TRAITS[r[1]];
+  track("result_view",{top:r[0]});
+  show(`<div class="badge">Your strongest focus style</div>
+  <h1 style="margin-top:0">${top.name}</h1>
+  <p style="font-size:19px"><b>${top.tag}</b></p>
+  <div class="card"><p>${top.sum}</p>
+  ${r.map((t,i)=>`<div class="bar ${i===0?"top":""}"><div class="lab"><span>${TRAITS[t].name}</span><span>${p[t]}%</span></div><div class="track"><i style="width:${Math.max(p[t],4)}%"></i></div></div>`).join("")}
+  <p class="muted" style="font-size:14px">Your second strongest style is ${second.name}. Percentages show how strongly each style showed up in your answers. They are not clinical scores.</p></div>
+  <h3>Two things to try this week (free)</h3>
+  <div class="card"><ul class="tick"><li>${top.tips[0]}</li><li>${top.tips[1]}</li></ul></div>
+  <h3>Want the full report?</h3>
+  <div class="card"><p>The full report for ${top.name} goes further:</p>
+    <div class="locked"><b>Where it helps and where it costs you</b><small>Your 3 strengths and 3 friction points, in plain language.</small></div>
+    <div class="locked"><b>5 routines matched to your style</b><small>Three more beyond the free two, built for ${top.name}.</small></div>
+    <div class="locked"><b>How ${top.name} and ${second.name} combine</b><small>Your top two styles together, with examples.</small></div>
+    <button class="btn" id="offer" style="margin-top:14px">See the full report</button>
+    <p class="muted" style="font-size:14px;margin:10px 0 0">You can stop here. Everything above is yours to keep.</p></div>
+  <button class="btn ghost" id="retake" style="margin-top:14px">Retake the quiz</button>`);
+  document.getElementById("offer").onclick=()=>{nav("#/offer");};
+  document.getElementById("retake").onclick=()=>{ans={};save();page=0;nav("#/");};
+}
+function offer(){
+  if(Object.keys(ans).length<LIST.length){nav("#/quiz");return;}
+  const top=TRAITS[ranked()[0]]; track("offer_view");
+  show(`<h1 style="font-size:clamp(28px,6vw,38px)">Your full report: ${top.name}</h1>
+  <div class="card">
+    <ul class="tick"><li>Your 3 strengths and 3 friction points explained</li><li>5 routines matched to your focus style</li><li>How your top two styles combine</li><li>${CFG.trialDays}-day access, and you can keep the report</li></ul>
+    <div class="price" style="margin-top:18px">${CFG.priceToday}<span style="font-size:18px;font-weight:600;color:var(--muted)"> today</span></div>
+    <div class="terms"><strong>What happens next, in plain words</strong>
+      You pay ${CFG.priceToday} now for ${CFG.trialDays} days of access. On day ${CFG.trialDays+1} we charge ${CFG.priceThen} and then ${CFG.priceThen} ${CFG.interval} until you cancel. Cancel in one click from the link in your receipt email or on the <a href="${CFG.cancelUrl}">cancel page</a>, no call or chat needed. If you cancel before day ${CFG.trialDays+1} you pay only ${CFG.priceToday}.</div>
+    <button class="btn" id="buy">Get my report for ${CFG.priceToday}</button>
+    <p id="nocheck" class="notice hide">Checkout is not connected yet (preview mode).</p>
+    <p class="muted" style="font-size:14px;margin:12px 0 0">We send a reminder email 2 days before the first ${CFG.priceThen} charge. Refund requests within 14 days of any charge are honored. Questions: ${CFG.supportEmail}</p>
+  </div>
+  <p style="text-align:center;margin-top:16px"><a href="#/result">Back to my free result</a></p>`);
+  document.getElementById("buy").onclick=()=>{ track("checkout_click"); if(CFG.checkoutUrl) location.href=CFG.checkoutUrl; else document.getElementById("nocheck").classList.remove("hide"); };
+}
+function report(){
+  if(Object.keys(ans).length<LIST.length){nav("#/quiz");return;}
+  const r=ranked(), p=scores(), a=TRAITS[r[0]], b=TRAITS[r[1]]; track("report_view");
+  show(`<div class="badge">Full report</div><h1 style="margin-top:0">${a.name}, with a touch of ${b.name}</h1>
+  <div class="card"><p>${a.sum}</p>
+  <h3>Where it helps</h3><ul class="tick">${a.str.map(x=>`<li>${x}</li>`).join("")}</ul>
+  <h3>Where it costs you</h3><ul class="tick">${a.fric.map(x=>`<li>${x}</li>`).join("")}</ul>
+  <h3>Five routines for ${a.name}</h3><ul class="tick">${a.tips.map(x=>`<li>${x}</li>`).join("")}</ul>
+  <h3>How ${a.name} and ${b.name} combine</h3><p>${b.sum}</p>
+  <p>When both are strong, notice which one is driving at a given moment. If you are in ${b.name} mode, use the ${b.name} routines: ${b.tips[0]}</p>
+  <h3>Your 30-day plan</h3><ul class="tick"><li><b>Week 1:</b> ${a.tips[0]}</li><li><b>Week 2:</b> ${a.tips[2]}</li><li><b>Week 3:</b> ${a.tips[3]}</li><li><b>Week 4:</b> Review what stuck, keep two routines, drop the rest.</li></ul>
+  <button class="btn ghost" onclick="window.print()" style="margin-top:12px">Print or save as PDF</button></div>
+  <div class="notice">Reminder: this report describes working styles. It is not a diagnosis. If struggles affect your daily life, talk to a qualified clinician.</div>`);
+}
+function terms(){
+  show(`<h1 style="font-size:34px">Terms and cancelling</h1><div class="card">
+  <h3 style="margin-top:0">What you pay</h3><p>${money()}. Prices are shown before you pay.</p>
+  <h3>How to cancel</h3><p>Use the cancel link in your receipt email, or email ${CFG.supportEmail} from the address you paid with. We confirm by email the same day. Cancelling before day ${CFG.trialDays+1} means you pay only ${CFG.priceToday}.</p>
+  <h3>Refunds</h3><p>Ask within 14 days of any charge and you get that charge back.</p>
+  <h3>Your data</h3><p>Your quiz answers stay in your own browser until you buy. We do not sell your answers.</p>
+  <h3>Not medical advice</h3><p>${CFG.brand} is a self-reflection tool, not a medical test.</p></div>
+  <p style="text-align:center;margin-top:16px"><a href="#/">Back</a></p>`);
+}
+let lastKey=null;
+function keyOf(h){ return (h||"#/").replace("#/","").split("?")[0]; }
+function render(h){
+  const k=keyOf(h); lastKey=k;
+  ({"":home,quiz:()=>quiz(),result,offer,report,terms}[k]||home)();
+}
+function nav(h){ try{ if(location.hash!==h) history.pushState(null,"",h); }catch(e){} render(h); }
+window.addEventListener("hashchange",()=>{ if(keyOf(location.hash)!==lastKey) render(location.hash); });
+window.addEventListener("popstate",()=>{ if(keyOf(location.hash)!==lastKey) render(location.hash); });
+document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest('a[href^="#/"]'); if(a){ e.preventDefault(); nav(a.getAttribute("href")); } });
+render(location.hash);
+</script>
+</body>
+</html>
